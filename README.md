@@ -45,15 +45,10 @@ KiteConnect.ready(function() {
     );
 
     // Register an (optional) callback.
+    // addon
+    // Pop-up close is also registered as cancelled event
     kite.finished(function(status, request_token) {
         alert("Finished. Status is " + status);
-    });
-
-    // addon
-    // To get status for popup screen, if user directly closes it, 
-    // without selecting either cancel or submit on basket popup window
-    kite.winEvent(function(status) {
-        alert("Popup window closed status is " + status);
     });
 
     // Render the in-built button inside a given target
