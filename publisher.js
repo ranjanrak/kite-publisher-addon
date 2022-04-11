@@ -19,7 +19,6 @@
 		modal_box = null,
 		active_instance = null,
 		loaded = false;
-        win_event = false;
 
 	// Open an inline dialog.
 	function modal(url, title) {
@@ -104,11 +103,18 @@
 
 		this.win = window.open(url, title, params);
 		modal_box = this;
-
-        // Capture pop-up window close event
-        if(active_instance) {
-            active_instance.winEvent(this.win);
-        }
+		
+		// Capture pop-up window close event
+		if(active_instance) {
+			// Start a timer and check the closed property of the popup window every second 
+			var timer = setInterval(function() {
+				if(this.win.closed) {
+					// clear the timer when popup window is closed
+					clearInterval(timer);
+					active_instance.dialogCall(this.win.closed);
+				}
+			}, 1000);
+		}
 
 		return $(this.win.document).find("body");
 	}
@@ -270,6 +276,7 @@
 		var	basket = [], // individual scrips that will be added
 			options = {},
 			finished_callback = null,
+			win_event = null,
 			id = Math.floor(Math.random()*Math.pow(10,8)); // unique id for this instance
 
 
@@ -371,22 +378,10 @@
 			finished_callback = callback;
 		};
 		
-		// Set pop-up window close status
-		this.winClose = function() {
-			win_event = true;
+		// Set pop-up window close status callback
+		this.winEvent = function(callback) {
+			win_event = callback;
 		}
-		
-		// Set event update for pop-up window close
-		this.winEvent = function(win) {
-			if (win_event) {
-				var timer = setInterval(function() {
-					if(win.closed) {
-						clearInterval(timer);
-						alert('Pop-up window is closed');
-					}
-				}, 1000);
-			}
-		};
 
 		// Render trade button.
 		this.renderButton = function(target) {
@@ -489,6 +484,13 @@
 								request_token ? request_token : null);
 			}
 		};
+
+		// Callback for dialog/popup event
+		this.dialogCall = function(status) {
+			if(typeof(win_event) == "function") {
+				win_event(status);
+			}
+		}
 
 		this.setOption("api_key", api_key);
 		this.setOption("redirect_url", "#");

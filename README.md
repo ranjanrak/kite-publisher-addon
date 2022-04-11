@@ -50,9 +50,11 @@ KiteConnect.ready(function() {
     });
 
     // addon
-    // To get status for popup screen, if directly closed by the user, 
-    // without selecting either cancel or submit
-    kite.winClose();
+    // To get status for popup screen, if user directly closes it, 
+    // without selecting either cancel or submit on basket popup window
+    kite.winEvent(function(status) {
+        alert("Popup window closed status is " + status);
+    });
 
     // Render the in-built button inside a given target
     kite.renderButton("#default-button");
