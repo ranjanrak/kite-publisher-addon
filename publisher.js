@@ -111,7 +111,7 @@
 				if(this.win.closed) {
 					// clear the timer when popup window is closed
 					clearInterval(timer);
-					active_instance.dialogCall(this.win.closed);
+					active_instance.callback("cancelled", null);
 				}
 			}, 1000);
 		}
@@ -276,7 +276,6 @@
 		var	basket = [], // individual scrips that will be added
 			options = {},
 			finished_callback = null,
-			win_event = null,
 			id = Math.floor(Math.random()*Math.pow(10,8)); // unique id for this instance
 
 
@@ -377,11 +376,6 @@
 		this.finished = function(callback) {
 			finished_callback = callback;
 		};
-		
-		// Set pop-up window close status callback
-		this.winEvent = function(callback) {
-			win_event = callback;
-		}
 
 		// Render trade button.
 		this.renderButton = function(target) {
@@ -484,13 +478,6 @@
 								request_token ? request_token : null);
 			}
 		};
-
-		// Callback for dialog/popup event
-		this.dialogCall = function(status) {
-			if(typeof(win_event) == "function") {
-				win_event(status);
-			}
-		}
 
 		this.setOption("api_key", api_key);
 		this.setOption("redirect_url", "#");
